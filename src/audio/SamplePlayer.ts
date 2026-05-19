@@ -73,11 +73,14 @@ export class ChordSampler {
     events.forEach((event) => {
       const id = Tone.getTransport().schedule((time) => {
         if (!this.sampler) return;
-        const durationNotation = `${event.durationSteps}*16n`;
+        // Convert step count to seconds for reliable cross-browser support
+        const bpm = Tone.getTransport().bpm.value;
+        const secondsPerSixteenth = 60 / bpm / 4;
+        const durationSeconds = event.durationSteps * secondsPerSixteenth;
         try {
-          this.sampler.triggerAttackRelease(event.notes, durationNotation, time);
-        } catch {
-          // ignore individual scheduling errors (e.g. invalid note name)
+          this.sampler.triggerAttackRelease(event.notes, durationSeconds, time);
+        } catch (err) {
+          console.warn('[ChordSampler] triggerAttackRelease failed:', err, event.notes);
         }
       }, `0:0:${event.stepGlobal}`);
       this.scheduledIds.push(id);

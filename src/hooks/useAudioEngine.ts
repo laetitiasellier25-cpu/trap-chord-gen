@@ -120,9 +120,14 @@ function rescheduleAll() {
 
 async function play() {
   await ensureAudioStarted();
-  // Always regenerate to make sure events are fresh
-  regenerateChords();
+  console.log('[Audio] context state:', Tone.context.state);
+
+  const totalSteps = regenerateChords();
+  console.log('[Audio] generated chord events, totalSteps:', totalSteps);
+  console.log('[Audio] sampler loaded:', getEngine().chord.loaded, 'sampler:', !!getEngine().chord.sampler);
+
   rescheduleAll();
+  console.log('[Audio] scheduled. loopLength:', Math.max(useStore.getState().loopLengthSteps, useStore.getState().stepCount));
 
   const eng = getEngine();
   if (eng.playheadRepeatId !== null) {

@@ -41,7 +41,7 @@ export function buildInitialVoicing(symbol: string, baseOctave = 3): string[] {
   if (chord.empty || chord.notes.length === 0) return [];
 
   const rootPc = pcMidi(chord.notes[0]);
-  const rootMidi = (baseOctave + 1) * 12 + rootPc; // octave 3 root = midi 48 for C
+  const rootMidi = (baseOctave + 1) * 12 + rootPc; // octave 4 root = midi 60 for C
 
   const intervals: number[] = chord.notes.map((n: string) => {
     const pc = pcMidi(n);
@@ -140,7 +140,7 @@ export function resolveProgressionWithVoiceLeading(
   const voicings: string[][] = [];
 
   symbols.forEach((sym, i) => {
-    const initial = buildInitialVoicing(sym, 3);
+    const initial = buildInitialVoicing(sym, 4);
     if (i === 0) {
       voicings.push(initial);
     } else {
