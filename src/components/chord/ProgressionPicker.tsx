@@ -38,6 +38,7 @@ export function ProgressionPicker({ onChange }: Props) {
 
   const handleRandom = () => {
     if (!filtered.length) return;
+    // eslint-disable-next-line react-hooks/purity -- Math.random in an event handler is intentional, not render logic
     const random = filtered[Math.floor(Math.random() * filtered.length)];
     setSelectedProgression(random.id);
     // pick a default recommended pattern that survives the complexity filter
