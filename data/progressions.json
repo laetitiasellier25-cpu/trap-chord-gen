@@ -1,0 +1,327 @@
+[
+  {
+    "id": "trap-001",
+    "name": "i – iv",
+    "category": "trap",
+    "subcategory": "dark",
+    "romanNumerals": ["i", "iv"],
+    "chordCount": 2,
+    "mood": "Sombre, evil, signature du producteur OZ",
+    "bpm": { "min": 130, "max": 150, "default": 140 },
+    "examples": [
+      "Drake – Money In The Grave",
+      "Drake – Sneakin'",
+      "Meek Mill – Going Bad",
+      "J. Cole – A M A R I",
+      "Kanye West – Closed On Sunday"
+    ],
+    "recommendedPatterns": ["A2", "A3", "B1"],
+    "recommendedStructures": ["E1", "E2"]
+  },
+  {
+    "id": "trap-002",
+    "name": "i – VI",
+    "category": "trap",
+    "subcategory": "melodic",
+    "romanNumerals": ["i", "VI"],
+    "chordCount": 2,
+    "mood": "Triste, mélancolique, descente émotionnelle",
+    "bpm": { "min": 80, "max": 150, "default": 130 },
+    "examples": [
+      "Juice WRLD – Lean Wit Me",
+      "Juice WRLD – My Fault",
+      "Juice WRLD – Burn",
+      "XXXTENTACION – Moonlight",
+      "NF – BULLET"
+    ],
+    "recommendedPatterns": ["A1", "A2", "D2"],
+    "recommendedStructures": ["E1", "E3"]
+  },
+  {
+    "id": "trap-003",
+    "name": "i – VII – VI – VII",
+    "category": "trap",
+    "subcategory": "dark",
+    "romanNumerals": ["i", "VII", "VI", "VII"],
+    "chordCount": 4,
+    "mood": "Dark, menaçant, hypnotique, eerie",
+    "bpm": { "min": 130, "max": 150, "default": 140 },
+    "examples": [
+      "Style Future / 21 Savage",
+      "UK Drill type beats"
+    ],
+    "recommendedPatterns": ["B1", "B2", "C1"],
+    "recommendedStructures": ["E1", "E2"]
+  },
+  {
+    "id": "trap-004",
+    "name": "i – VI – III – VII",
+    "category": "trap",
+    "subcategory": "cinematic",
+    "romanNumerals": ["i", "VI", "III", "VII"],
+    "chordCount": 4,
+    "mood": "Brooding, cinématique, grandiose",
+    "bpm": { "min": 130, "max": 145, "default": 130 },
+    "examples": [
+      "Travis Scott – Goosebumps (variante)",
+      "Young Thug type beats"
+    ],
+    "recommendedPatterns": ["A2", "B1", "B3"],
+    "recommendedStructures": ["E1", "E5"]
+  },
+  {
+    "id": "trap-005",
+    "name": "i – VI – VII",
+    "category": "trap",
+    "subcategory": "emotional",
+    "romanNumerals": ["i", "VI", "VII"],
+    "chordCount": 3,
+    "mood": "Émotionnel, mélancolique avec montée d'espoir",
+    "bpm": { "min": 75, "max": 95, "default": 85 },
+    "examples": [
+      "Juice WRLD – In My Head",
+      "Juice WRLD – 734"
+    ],
+    "recommendedPatterns": ["A2", "B1", "D2"],
+    "recommendedStructures": ["E3", "E4"]
+  },
+  {
+    "id": "trap-006",
+    "name": "VI – v – i",
+    "category": "trap",
+    "subcategory": "cool-dark",
+    "romanNumerals": ["VI", "v", "i"],
+    "chordCount": 3,
+    "mood": "Cool, dark, fluide",
+    "bpm": { "min": 90, "max": 130, "default": 110 },
+    "examples": [
+      "XXXTENTACION – Moonlight"
+    ],
+    "recommendedPatterns": ["A2", "B2"],
+    "recommendedStructures": ["E1", "E3"]
+  },
+  {
+    "id": "trap-007",
+    "name": "i – iv – VII – III",
+    "category": "trap",
+    "subcategory": "melodic",
+    "romanNumerals": ["i", "iv", "VII", "III"],
+    "chordCount": 4,
+    "mood": "Mélodique, efficace, prévisible",
+    "bpm": { "min": 80, "max": 140, "default": 120 },
+    "examples": [
+      "Drake & Future – Life Is Good (variante)",
+      "Trap mélodique 2020+"
+    ],
+    "recommendedPatterns": ["B1", "B2"],
+    "recommendedStructures": ["E1", "E2"]
+  },
+  {
+    "id": "trap-008",
+    "name": "i – bVII – iv – v  (Mask Off type)",
+    "category": "trap",
+    "subcategory": "hypnotic",
+    "romanNumerals": ["i", "bVII", "iv", "v"],
+    "chordCount": 4,
+    "mood": "Hypnotique, dark, cinématique",
+    "bpm": { "min": 140, "max": 160, "default": 150 },
+    "examples": [
+      "Future – Mask Off (prod. Metro Boomin)"
+    ],
+    "recommendedPatterns": ["B2", "C1"],
+    "recommendedStructures": ["E1"]
+  },
+  {
+    "id": "urban-001",
+    "name": "vi – V – i – V",
+    "category": "urban",
+    "subcategory": "hypnotic",
+    "romanNumerals": ["vi", "V", "i", "V"],
+    "chordCount": 4,
+    "mood": "Hypnotique, intense mais smooth",
+    "bpm": { "min": 130, "max": 160, "default": 145 },
+    "examples": [
+      "Style Travis Scott chill tracks",
+      "Lil Uzi Vert vibes"
+    ],
+    "recommendedPatterns": ["B1", "A3"],
+    "recommendedStructures": ["E1", "E2"]
+  },
+  {
+    "id": "urban-002",
+    "name": "I – i – VI  (Just Wanna Rock type)",
+    "category": "urban",
+    "subcategory": "drill",
+    "romanNumerals": ["I", "i", "VI"],
+    "chordCount": 3,
+    "mood": "Evil, dansant, viral, Jersey club",
+    "bpm": { "min": 140, "max": 160, "default": 150 },
+    "examples": [
+      "Lil Uzi Vert – Just Wanna Rock"
+    ],
+    "recommendedPatterns": ["C1", "C2", "B4"],
+    "recommendedStructures": ["E2"]
+  },
+  {
+    "id": "urban-003",
+    "name": "II – i  (drill)",
+    "category": "urban",
+    "subcategory": "drill",
+    "romanNumerals": ["II", "i"],
+    "chordCount": 2,
+    "mood": "Tension/release brut, aggressif",
+    "bpm": { "min": 140, "max": 150, "default": 145 },
+    "examples": [
+      "Travis Scott – FE!N style",
+      "UK Drill type beats"
+    ],
+    "recommendedPatterns": ["C1", "C2"],
+    "recommendedStructures": ["E1"]
+  },
+  {
+    "id": "urban-004",
+    "name": "i – v – VI – iv",
+    "category": "urban",
+    "subcategory": "trap-soul",
+    "romanNumerals": ["i", "v", "VI", "iv"],
+    "chordCount": 4,
+    "mood": "Mélancolique, réfléchi",
+    "bpm": { "min": 80, "max": 130, "default": 110 },
+    "examples": [
+      "Lil Tjay / Polo G type beats",
+      "Trap mélodique émotionnel"
+    ],
+    "recommendedPatterns": ["A2", "D1", "D2"],
+    "recommendedStructures": ["E1", "E5"]
+  },
+  {
+    "id": "urban-005",
+    "name": "i – v – VI – VII  (Lucid Dreams type)",
+    "category": "urban",
+    "subcategory": "trap-soul",
+    "romanNumerals": ["i", "v", "VI", "VII"],
+    "chordCount": 4,
+    "mood": "Doux-amer, nostalgique, parfait pour voix auto-tunées",
+    "bpm": { "min": 80, "max": 90, "default": 84 },
+    "examples": [
+      "Juice WRLD – Lucid Dreams (sample Sting)",
+      "Drake – Rich Baby Daddy (variante 2 accords)"
+    ],
+    "recommendedPatterns": ["D1", "A2"],
+    "recommendedStructures": ["E1"]
+  },
+  {
+    "id": "rnb-001",
+    "name": "i – v – VI – VII  (Blinding Lights type)",
+    "category": "rnb",
+    "subcategory": "synthwave",
+    "romanNumerals": ["i", "v", "VI", "VII"],
+    "chordCount": 4,
+    "mood": "Synthwave nostalgique, énergique 80s",
+    "bpm": { "min": 80, "max": 170, "default": 85 },
+    "examples": [
+      "The Weeknd – Blinding Lights",
+      "The Weeknd – In Your Eyes"
+    ],
+    "recommendedPatterns": ["A4", "B4"],
+    "recommendedStructures": ["E1"]
+  },
+  {
+    "id": "rnb-002",
+    "name": "i7 – bVII – bVImaj7  (Love Yourz type)",
+    "category": "rnb",
+    "subcategory": "soulful",
+    "romanNumerals": ["i7", "bVII", "bVImaj7"],
+    "chordCount": 3,
+    "mood": "Soulful chaud, introspectif, reconnaissant",
+    "bpm": { "min": 80, "max": 95, "default": 88 },
+    "examples": [
+      "J. Cole – Love Yourz",
+      "Trap soul Drake Take Care era"
+    ],
+    "recommendedPatterns": ["D2", "D3", "A2"],
+    "recommendedStructures": ["E1", "E5"]
+  },
+  {
+    "id": "rnb-003",
+    "name": "iii – IV – vi  (Devil In A New Dress type)",
+    "category": "rnb",
+    "subcategory": "soulful",
+    "romanNumerals": ["iii", "IV", "vi"],
+    "chordCount": 3,
+    "mood": "Riche, soulful, mélange majeur/mineur",
+    "bpm": { "min": 80, "max": 95, "default": 88 },
+    "examples": [
+      "Kanye West – Devil In A New Dress",
+      "Sample soul chops style"
+    ],
+    "recommendedPatterns": ["D3", "A4"],
+    "recommendedStructures": ["E1"]
+  },
+  {
+    "id": "rnb-004",
+    "name": "i7 – i7sus2 – bIII – bVImaj7  (Child's Play type)",
+    "category": "rnb",
+    "subcategory": "jazz-dark",
+    "romanNumerals": ["i7", "isus2", "bIII", "bVImaj7"],
+    "chordCount": 4,
+    "mood": "Jazz sombre, R&B nocturne, intime, Toronto sound",
+    "bpm": { "min": 70, "max": 95, "default": 80 },
+    "examples": [
+      "Drake – Child's Play (prod. 40)",
+      "R&B 'underwater' OVO"
+    ],
+    "recommendedPatterns": ["A1", "D3"],
+    "recommendedStructures": ["E3", "E4"]
+  },
+  {
+    "id": "rnb-005",
+    "name": "i7 – IVm7 – VImaj7 – bIIImaj7  (No Idea type)",
+    "category": "rnb",
+    "subcategory": "smooth",
+    "romanNumerals": ["i7", "IVm7", "VImaj7", "bIIImaj7"],
+    "chordCount": 4,
+    "mood": "Smooth, hypnotique, nocturne",
+    "bpm": { "min": 62, "max": 128, "default": 125 },
+    "examples": [
+      "Don Toliver – No Idea",
+      "Bryson Tiller – Exchange style"
+    ],
+    "recommendedPatterns": ["D1", "D2"],
+    "recommendedStructures": ["E1"]
+  },
+  {
+    "id": "rnb-006",
+    "name": "vi – IV – I – V",
+    "category": "rnb",
+    "subcategory": "pop-rnb",
+    "romanNumerals": ["vi", "IV", "I", "V"],
+    "chordCount": 4,
+    "mood": "Universel, accessible, émotionnel doux",
+    "bpm": { "min": 90, "max": 105, "default": 98 },
+    "examples": [
+      "Drake – One Dance (variante)",
+      "Type beats SZA × Drake"
+    ],
+    "recommendedPatterns": ["A2", "A3", "D2"],
+    "recommendedStructures": ["E1", "E2"]
+  },
+  {
+    "id": "rnb-007",
+    "name": "Imaj7 – iii7 – IVmaj7 – iv7  (Neo-soul)",
+    "category": "rnb",
+    "subcategory": "neo-soul",
+    "romanNumerals": ["Imaj7", "iii7", "IVmaj7", "iv7"],
+    "chordCount": 4,
+    "mood": "Doux, romantique avec twist mélancolique (minor plagal)",
+    "bpm": { "min": 70, "max": 90, "default": 80 },
+    "examples": [
+      "H.E.R. style",
+      "Daniel Caesar style",
+      "SZA – The Weekend type",
+      "PARTYNEXTDOOR slow jams"
+    ],
+    "recommendedPatterns": ["D1", "D3"],
+    "recommendedStructures": ["E1", "E5"]
+  }
+]
