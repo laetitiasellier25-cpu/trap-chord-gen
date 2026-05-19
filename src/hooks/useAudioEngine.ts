@@ -120,10 +120,8 @@ function rescheduleAll() {
 
 async function play() {
   await ensureAudioStarted();
-  const state = useStore.getState();
-  if (!state.generated && state.selectedProgressionId) {
-    regenerateChords();
-  }
+  // Always regenerate to make sure events are fresh
+  regenerateChords();
   rescheduleAll();
 
   const eng = getEngine();

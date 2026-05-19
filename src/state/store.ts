@@ -105,11 +105,11 @@ function makeSeededPatterns(count: StepCount): LanePattern[] {
 
 export const useStore = create<StoreState>((set) => ({
   chordSample: { fileName: null, rootNote: 'C4', loaded: false },
-  selectedProgressionId: null,
+  selectedProgressionId: 'trap-005', // i–VI–VII, Juice WRLD type — good default
   currentTonic: 'C',
   currentMode: 'minor',
-  selectedPatternId: null,
-  selectedStructureId: null,
+  selectedPatternId: 'A2',
+  selectedStructureId: 'E1',
   complexity: 40,
   genreFilter: 'all',
   chordCountFilter: 'all',
