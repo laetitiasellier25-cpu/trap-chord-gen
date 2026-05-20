@@ -111,9 +111,6 @@ function rescheduleAll() {
 
   const loopLength = Math.max(state.loopLengthSteps, state.stepCount);
 
-  if (eng.chord.sampler && state.generated) {
-    eng.chord.scheduleEvents(state.generated.events, loopLength);
-  }
   eng.drum.scheduleAll(state.lanes, state.patterns, loopLength);
   setLoopEnd(loopLength);
 }
@@ -132,13 +129,28 @@ async function play() {
   if (eng.playheadRepeatId !== null) {
     Tone.getTransport().clear(eng.playheadRepeatId);
   }
+
+  // Build chord step map once per play session
+  const state2 = useStore.getState();
+  const chordStepMap = (eng.chord.sampler && state2.generated)
+    ? eng.chord.buildStepMap(state2.generated.events)
+    : null;
+  const loopLength2 = Math.max(state2.loopLengthSteps, state2.stepCount);
+
   eng.playheadRepeatId = Tone.getTransport().scheduleRepeat(
     (time) => {
       const ticks = Tone.getTransport().getTicksAtTime(time);
       const ppq = Tone.getTransport().PPQ;
-      const step = Math.floor((ticks / ppq) * 4) % useStore.getState().stepCount;
+      const uiStep = Math.floor((ticks / ppq) * 4) % useStore.getState().stepCount;
+      const chordStep = Math.floor((ticks / ppq) * 4) % loopLength2;
+
+      // Trigger chord on every 16th note that has an event
+      if (chordStepMap) {
+        eng.chord.triggerStep(chordStep, chordStepMap, time);
+      }
+
       Tone.getDraw().schedule(() => {
-        useStore.getState().setCurrentStep(step);
+        useStore.getState().setCurrentStep(uiStep);
       }, time);
     },
     '16n',
