@@ -112,7 +112,7 @@ function rescheduleAll() {
   const loopLength = Math.max(state.loopLengthSteps, state.stepCount);
 
   if (eng.chord.sampler && state.generated) {
-    eng.chord.scheduleEvents(state.generated.events);
+    eng.chord.scheduleEvents(state.generated.events, loopLength);
   }
   eng.drum.scheduleAll(state.lanes, state.patterns, loopLength);
   setLoopEnd(loopLength);

@@ -4,6 +4,7 @@ import type { ChordEvent } from '../types';
 export class ChordSampler {
   sampler: Tone.Sampler | null = null;
   gain: Tone.Gain;
+  part: Tone.Part | null = null;
   scheduledIds: number[] = [];
   rootNote = 'C4';
   currentUrl: string | null = null;
@@ -44,7 +45,6 @@ export class ChordSampler {
       this.rootNote = rootNote;
       return;
     }
-    // re-create sampler with new root
     if (this.sampler) {
       this.sampler.disconnect();
       this.sampler.dispose();
@@ -66,28 +66,40 @@ export class ChordSampler {
     this.gain.gain.rampTo(Tone.dbToGain(db), 0.05);
   }
 
-  scheduleEvents(events: ChordEvent[]) {
+  // Use Tone.Part instead of Transport.schedule so events repeat on each transport loop
+  scheduleEvents(events: ChordEvent[], totalSteps: number) {
     this.cancel();
     if (!this.sampler) return;
 
-    events.forEach((event) => {
-      const id = Tone.getTransport().schedule((time) => {
-        if (!this.sampler) return;
-        // Convert step count to seconds for reliable cross-browser support
-        const bpm = Tone.getTransport().bpm.value;
-        const secondsPerSixteenth = 60 / bpm / 4;
-        const durationSeconds = event.durationSteps * secondsPerSixteenth;
-        try {
-          this.sampler.triggerAttackRelease(event.notes, durationSeconds, time);
-        } catch (err) {
-          console.warn('[ChordSampler] triggerAttackRelease failed:', err, event.notes);
-        }
-      }, `0:0:${event.stepGlobal}`);
-      this.scheduledIds.push(id);
-    });
+    const partEvents = events.map((e) => ({
+      time: `0:0:${e.stepGlobal}`,
+      notes: e.notes,
+      durationSteps: e.durationSteps,
+    }));
+
+    this.part = new Tone.Part((time, event: { notes: string[]; durationSteps: number }) => {
+      if (!this.sampler) return;
+      const bpm = Tone.getTransport().bpm.value;
+      const secondsPerSixteenth = 60 / bpm / 4;
+      const durationSeconds = event.durationSteps * secondsPerSixteenth;
+      try {
+        this.sampler.triggerAttackRelease(event.notes, durationSeconds, time);
+      } catch (err) {
+        console.warn('[ChordSampler] triggerAttackRelease failed:', err, event.notes);
+      }
+    }, partEvents);
+
+    this.part.loop = true;
+    this.part.loopEnd = `0:0:${totalSteps}`;
+    this.part.start(0);
   }
 
   cancel() {
+    if (this.part) {
+      this.part.stop();
+      this.part.dispose();
+      this.part = null;
+    }
     this.scheduledIds.forEach((id) => Tone.getTransport().clear(id));
     this.scheduledIds = [];
   }
