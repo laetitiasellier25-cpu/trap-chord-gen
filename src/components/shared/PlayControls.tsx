@@ -2,6 +2,16 @@ import { useState, useEffect } from 'react';
 import * as Tone from 'tone';
 import { useStore } from '../../state/store';
 
+async function testBeep() {
+  Tone.context.rawContext.resume().catch(() => {});
+  await Tone.start();
+  const synth = new Tone.Synth({ oscillator: { type: 'triangle' } }).toDestination();
+  synth.triggerAttackRelease('C4', '8n', Tone.now());
+  synth.triggerAttackRelease('E4', '8n', Tone.now() + 0.3);
+  synth.triggerAttackRelease('G4', '8n', Tone.now() + 0.6);
+  setTimeout(() => synth.dispose(), 2000);
+}
+
 interface Props {
   onPlay: () => void;
   onStop: () => void;
@@ -47,6 +57,12 @@ export function PlayControls({ onPlay, onStop }: Props) {
             ■ STOP
           </button>
         )}
+        <button
+          onClick={testBeep}
+          className="px-4 py-3 rounded-md text-sm font-semibold bg-yellow-500 hover:bg-yellow-400 text-black"
+        >
+          🔊 Test
+        </button>
       </div>
 
       {/* Debug panel - visible on all devices */}
