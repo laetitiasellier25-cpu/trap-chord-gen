@@ -22,6 +22,7 @@ import { resolveProgressionWithVoiceLeading } from '../music/progressionResolver
 interface EngineSingleton {
   chord: ChordSampler;
   drum: DrumEngine;
+  fallbackSynth: Tone.PolySynth | null;
   playheadRepeatId: number | null;
 }
 
@@ -32,10 +33,22 @@ function getEngine(): EngineSingleton {
     singleton = {
       chord: new ChordSampler(),
       drum: new DrumEngine(5),
+      fallbackSynth: null,
       playheadRepeatId: null,
     };
   }
   return singleton;
+}
+
+function getFallbackSynth(): Tone.PolySynth {
+  const eng = getEngine();
+  if (!eng.fallbackSynth) {
+    eng.fallbackSynth = new Tone.PolySynth(Tone.Synth, {
+      oscillator: { type: 'triangle' },
+      envelope: { attack: 0.02, decay: 0.1, sustain: 0.5, release: 1 },
+    }).toDestination();
+  }
+  return eng.fallbackSynth;
 }
 
 async function loadChordSample(file: File, rootNote: string) {
@@ -140,15 +153,16 @@ async function play() {
       const loopLen = Math.max(st.loopLengthSteps, st.stepCount);
       const chordStep = globalStep % loopLen;
 
-      // Trigger chord: read live state every tick, no closed-over map
-      const sampler = getEngine().chord.sampler;
-      if (sampler && st.generated) {
+      // Trigger chord with sampler if loaded, otherwise fallback synth
+      if (st.generated) {
         const event = st.generated.events.find((e) => e.stepGlobal === chordStep);
-        if (event) {
+        if (event && event.notes.length > 0) {
           const bpm = Tone.getTransport().bpm.value;
           const dur = (event.durationSteps * 60) / (bpm * 4);
+          const sampler = getEngine().chord.sampler;
+          const instrument = sampler ?? getFallbackSynth();
           try {
-            sampler.triggerAttackRelease(event.notes, dur, time);
+            instrument.triggerAttackRelease(event.notes, dur, time);
           } catch (err) {
             console.warn('[chord]', err);
           }
