@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import * as Tone from 'tone';
 import { useStore } from '../../state/store';
+import { useAudioEngine } from '../../hooks/useAudioEngine';
 
 async function testBeep() {
   Tone.context.rawContext.resume().catch(() => {});
@@ -18,11 +19,13 @@ interface Props {
 }
 
 export function PlayControls({ onPlay, onStop }: Props) {
+  const engine = useAudioEngine();
   const isPlaying = useStore((s) => s.isPlaying);
   const generated = useStore((s) => s.generated);
   const chordSample = useStore((s) => s.chordSample);
   const [ctxState, setCtxState] = useState('unknown');
   const [lastError, setLastError] = useState<string | null>(null);
+  const [samplerTestResult, setSamplerTestResult] = useState<string | null>(null);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -40,11 +43,17 @@ export function PlayControls({ onPlay, onStop }: Props) {
     }
   };
 
+  const handleTestSampler = async () => {
+    setSamplerTestResult('...');
+    const result = await engine.testSampler();
+    setSamplerTestResult(result);
+  };
+
   const ok = ctxState === 'running';
 
   return (
     <div className="flex flex-col items-end gap-2">
-      <div className="flex gap-3 items-center">
+      <div className="flex gap-3 items-center flex-wrap justify-end">
         {!isPlaying ? (
           <button onClick={handlePlay} className="btn-primary text-base px-6 py-3">
             ▶ PLAY
@@ -61,11 +70,17 @@ export function PlayControls({ onPlay, onStop }: Props) {
           onClick={testBeep}
           className="px-4 py-3 rounded-md text-sm font-semibold bg-yellow-500 hover:bg-yellow-400 text-black"
         >
-          🔊 Test
+          🔊 Bip
+        </button>
+        <button
+          onClick={handleTestSampler}
+          className="px-4 py-3 rounded-md text-sm font-semibold bg-purple-500 hover:bg-purple-400 text-white"
+        >
+          🎹 Sample
         </button>
       </div>
 
-      {/* Debug panel - visible on all devices */}
+      {/* Debug panel */}
       <div className="text-[10px] font-mono bg-ink-900 border border-ink-600 rounded-md px-3 py-2 space-y-0.5 min-w-[220px]">
         <div className={ok ? 'text-neon-green' : 'text-red-400'}>
           Audio ctx : {ctxState}
@@ -76,6 +91,11 @@ export function PlayControls({ onPlay, onStop }: Props) {
         <div className={generated ? 'text-neon-green' : 'text-yellow-400'}>
           Accords : {generated ? `✓ ${generated.events.length} events` : '✗ aucun accord généré'}
         </div>
+        {samplerTestResult && (
+          <div className={samplerTestResult === 'triggered' ? 'text-neon-green' : 'text-red-400'}>
+            Sampler test : {samplerTestResult}
+          </div>
+        )}
         {lastError && <div className="text-red-400">Erreur : {lastError}</div>}
       </div>
     </div>

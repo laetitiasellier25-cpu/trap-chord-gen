@@ -160,6 +160,19 @@ function stop() {
   useStore.getState().setCurrentStep(-1);
 }
 
+async function testSampler() {
+  Tone.context.rawContext.resume().catch(() => {});
+  await ensureAudioStarted();
+  const eng = getEngine();
+  if (!eng.chord.sampler) return 'no-sampler';
+  try {
+    eng.chord.sampler.triggerAttackRelease(['C4', 'E4', 'G4'], 1, Tone.now());
+    return 'triggered';
+  } catch (e) {
+    return String(e);
+  }
+}
+
 // stable API object
 const ENGINE_API = {
   loadChordSample,
@@ -169,6 +182,7 @@ const ENGINE_API = {
   rescheduleAll,
   play,
   stop,
+  testSampler,
 } as const;
 
 export type EngineAPI = typeof ENGINE_API;
