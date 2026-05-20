@@ -1,9 +1,19 @@
-import { Progression, Chord, Note } from '@tonaljs/tonal';
+import { Key, Chord, Note } from '@tonaljs/tonal';
 import type { KeyMode } from '../types';
 
 const NOTE_TO_MIDI: Record<string, number> = {
   C: 0, 'C#': 1, Db: 1, D: 2, 'D#': 3, Eb: 3, E: 4, F: 5,
   'F#': 6, Gb: 6, G: 7, 'G#': 8, Ab: 8, A: 9, 'A#': 10, Bb: 10, B: 11,
+};
+
+const ROMAN_DEGREE: Record<string, number> = {
+  I: 0, II: 1, III: 2, IV: 3, V: 4, VI: 5, VII: 6,
+};
+
+const FLAT_MAP: Record<string, string> = {
+  C: 'B', D: 'Db', E: 'Eb', F: 'E', G: 'Gb', A: 'Ab', B: 'Bb',
+  'C#': 'C', 'D#': 'D', 'F#': 'F', 'G#': 'G', 'A#': 'A',
+  Db: 'C', Eb: 'D', Gb: 'F', Ab: 'G', Bb: 'A',
 };
 
 function pcMidi(note: string): number {
@@ -19,17 +29,41 @@ function midiToNoteName(midi: number): string {
 
 /**
  * Resolve roman numerals to chord symbols in a given key.
- * tonal's Progression.fromRomanNumerals expects something like "Cm" for minor key tonic-letter pair.
- * We construct the key root accordingly: e.g. tonic="C", mode="minor" -> "Cm".
+ *
+ * Uses Key.majorKey / Key.minorKey for the scale so that minor-mode degrees
+ * (VI → Ab, VII → Bb in C minor) come out correct. The quality is derived
+ * from the Roman numeral string itself: lowercase = minor, uppercase = major,
+ * explicit suffixes (maj7, m7, 7, sus2) override the default quality.
  */
 export function resolveProgression(
   tonic: string,
   mode: KeyMode,
   romanNumerals: string[],
 ): string[] {
-  const tonicKey = mode === 'minor' ? `${tonic}m` : tonic;
-  const symbols = Progression.fromRomanNumerals(tonicKey, romanNumerals);
-  return symbols;
+  const scale =
+    mode === 'minor'
+      ? Key.minorKey(tonic).natural.scale
+      : Key.majorKey(tonic).scale;
+
+  return romanNumerals.map((numeral) => {
+    const match = numeral.match(/^(b?)([IVXivx]+)(.*)/);
+    if (!match) return '';
+    const [, flat, romanPart, qualitySuffix] = match;
+    const isLower = romanPart === romanPart.toLowerCase();
+    const degree = ROMAN_DEGREE[romanPart.toUpperCase()];
+    if (degree === undefined) return '';
+
+    let root = scale[degree];
+    if (!root) return '';
+    if (flat) root = FLAT_MAP[Note.pitchClass(root)] ?? root;
+
+    if (qualitySuffix === 'maj7') return `${root}maj7`;
+    if (qualitySuffix === 'm7') return `${root}m7`;
+    if (qualitySuffix === '7') return isLower ? `${root}m7` : `${root}7`;
+    if (qualitySuffix === 'sus2') return `${root}sus2`;
+    if (isLower) return `${root}m`;
+    return root;
+  });
 }
 
 /**
