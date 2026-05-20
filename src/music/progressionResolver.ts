@@ -1,4 +1,4 @@
-import { Progression, Chord, Note } from '@tonaljs/tonal';
+import { Progression, Chord, Note, Key } from '@tonaljs/tonal';
 import type { KeyMode } from '../types';
 
 const NOTE_TO_MIDI: Record<string, number> = {
@@ -17,19 +17,49 @@ function midiToNoteName(midi: number): string {
   return `${names[midi % 12]}${octave}`;
 }
 
+function romanDegree(rn: string): number {
+  // Strip flat/sharp prefix and quality suffixes, then identify degree
+  const base = rn.toLowerCase().replace(/^[b#]/, '').replace(/maj\d*|m(?=\d)|\d+|sus\d*|dim|aug/g, '');
+  if (base.startsWith('vii')) return 6;
+  if (base.startsWith('vi')) return 5;
+  if (base.startsWith('iv')) return 3;
+  if (base.startsWith('v')) return 4;
+  if (base.startsWith('iii')) return 2;
+  if (base.startsWith('ii')) return 1;
+  return 0;
+}
+
+function minorChordSymbol(triad: string, rn: string): string {
+  const rootMatch = triad.match(/^([A-G][b#]?)/);
+  const root = rootMatch ? rootMatch[1] : '';
+  if (!root) return triad;
+  if (rn.includes('maj7')) return `${root}maj7`;
+  if (/sus2/i.test(rn)) return `${root}sus2`;
+  if (/sus4/i.test(rn)) return `${root}sus4`;
+  if (rn.includes('m7') && !rn.includes('maj')) return `${root}m7`;
+  if (rn.endsWith('7')) {
+    // lowercase first letter = minor 7th, uppercase = dominant 7th
+    const firstAlpha = rn.replace(/^b/, '')[0];
+    return firstAlpha === firstAlpha.toLowerCase() ? `${root}m7` : `${root}7`;
+  }
+  return triad;
+}
+
 /**
- * Resolve roman numerals to chord symbols in a given key.
- * tonal's Progression.fromRomanNumerals expects something like "Cm" for minor key tonic-letter pair.
- * We construct the key root accordingly: e.g. tonic="C", mode="minor" -> "Cm".
+ * Resolve roman numerals to chord symbols.
+ * Tonal's Progression.fromRomanNumerals only works for major keys —
+ * minor keys require manual resolution via Key.minorKey.
  */
 export function resolveProgression(
   tonic: string,
   mode: KeyMode,
   romanNumerals: string[],
 ): string[] {
-  const tonicKey = mode === 'minor' ? `${tonic}m` : tonic;
-  const symbols = Progression.fromRomanNumerals(tonicKey, romanNumerals);
-  return symbols;
+  if (mode === 'major') {
+    return Progression.fromRomanNumerals(tonic, romanNumerals);
+  }
+  const triads = Key.minorKey(tonic).natural.triads;
+  return romanNumerals.map((rn) => minorChordSymbol(triads[romanDegree(rn)] ?? '', rn));
 }
 
 /**
