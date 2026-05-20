@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useStore } from '../../state/store';
+import { useState, useEffect } from 'react';
 import * as Tone from 'tone';
+import { useStore } from '../../state/store';
 
 interface Props {
   onPlay: () => void;
@@ -9,25 +9,31 @@ interface Props {
 
 export function PlayControls({ onPlay, onStop }: Props) {
   const isPlaying = useStore((s) => s.isPlaying);
-  const [audioError, setAudioError] = useState<string | null>(null);
+  const generated = useStore((s) => s.generated);
+  const chordSample = useStore((s) => s.chordSample);
+  const [ctxState, setCtxState] = useState('unknown');
+  const [lastError, setLastError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      try { setCtxState(Tone.context.state); } catch { setCtxState('err'); }
+    }, 500);
+    return () => clearInterval(id);
+  }, []);
 
   const handlePlay = async () => {
-    setAudioError(null);
+    setLastError(null);
     try {
       await onPlay();
-      // Check context state after play
-      setTimeout(() => {
-        if (Tone.context.state !== 'running') {
-          setAudioError(`Audio context: ${Tone.context.state} — essaie de cliquer Play une deuxième fois`);
-        }
-      }, 500);
     } catch (e) {
-      setAudioError(e instanceof Error ? e.message : 'Erreur audio');
+      setLastError(e instanceof Error ? e.message : String(e));
     }
   };
 
+  const ok = ctxState === 'running';
+
   return (
-    <div className="flex flex-col items-end gap-1">
+    <div className="flex flex-col items-end gap-2">
       <div className="flex gap-3 items-center">
         {!isPlaying ? (
           <button onClick={handlePlay} className="btn-primary text-base px-6 py-3">
@@ -41,15 +47,21 @@ export function PlayControls({ onPlay, onStop }: Props) {
             ■ STOP
           </button>
         )}
-        <span className={`text-xs px-2 py-1 rounded-md font-mono ${
-          isPlaying ? 'text-neon-green bg-neon-green/10' : 'text-gray-500'
-        }`}>
-          {isPlaying ? '● PLAYING' : '○ STOPPED'}
-        </span>
       </div>
-      {audioError && (
-        <p className="text-xs text-red-400 max-w-xs text-right">{audioError}</p>
-      )}
+
+      {/* Debug panel - visible on all devices */}
+      <div className="text-[10px] font-mono bg-ink-900 border border-ink-600 rounded-md px-3 py-2 space-y-0.5 min-w-[220px]">
+        <div className={ok ? 'text-neon-green' : 'text-red-400'}>
+          Audio ctx : {ctxState}
+        </div>
+        <div className={chordSample.loaded ? 'text-neon-green' : 'text-yellow-400'}>
+          Sample : {chordSample.loaded ? `✓ ${chordSample.fileName}` : '✗ aucun sample chargé'}
+        </div>
+        <div className={generated ? 'text-neon-green' : 'text-yellow-400'}>
+          Accords : {generated ? `✓ ${generated.events.length} events` : '✗ aucun accord généré'}
+        </div>
+        {lastError && <div className="text-red-400">Erreur : {lastError}</div>}
+      </div>
     </div>
   );
 }

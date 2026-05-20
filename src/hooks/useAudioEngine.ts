@@ -119,15 +119,14 @@ function rescheduleAll() {
 }
 
 async function play() {
+  // On mobile, call resume() synchronously BEFORE any await
+  // to stay within the user gesture chain
+  Tone.context.rawContext.resume().catch(() => {});
+
   await ensureAudioStarted();
-  console.log('[Audio] context state:', Tone.context.state);
 
-  const totalSteps = regenerateChords();
-  console.log('[Audio] generated chord events, totalSteps:', totalSteps);
-  console.log('[Audio] sampler loaded:', getEngine().chord.loaded, 'sampler:', !!getEngine().chord.sampler);
-
+  regenerateChords();
   rescheduleAll();
-  console.log('[Audio] scheduled. loopLength:', Math.max(useStore.getState().loopLengthSteps, useStore.getState().stepCount));
 
   const eng = getEngine();
   if (eng.playheadRepeatId !== null) {
