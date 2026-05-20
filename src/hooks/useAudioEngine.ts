@@ -130,23 +130,29 @@ async function play() {
     Tone.getTransport().clear(eng.playheadRepeatId);
   }
 
-  // Build chord step map once per play session
-  const state2 = useStore.getState();
-  const chordStepMap = (eng.chord.sampler && state2.generated)
-    ? eng.chord.buildStepMap(state2.generated.events)
-    : null;
-  const loopLength2 = Math.max(state2.loopLengthSteps, state2.stepCount);
-
   eng.playheadRepeatId = Tone.getTransport().scheduleRepeat(
     (time) => {
       const ticks = Tone.getTransport().getTicksAtTime(time);
       const ppq = Tone.getTransport().PPQ;
-      const uiStep = Math.floor((ticks / ppq) * 4) % useStore.getState().stepCount;
-      const chordStep = Math.floor((ticks / ppq) * 4) % loopLength2;
+      const globalStep = Math.floor((ticks / ppq) * 4);
+      const st = useStore.getState();
+      const uiStep = globalStep % st.stepCount;
+      const loopLen = Math.max(st.loopLengthSteps, st.stepCount);
+      const chordStep = globalStep % loopLen;
 
-      // Trigger chord on every 16th note that has an event
-      if (chordStepMap) {
-        eng.chord.triggerStep(chordStep, chordStepMap, time);
+      // Trigger chord: read live state every tick, no closed-over map
+      const sampler = getEngine().chord.sampler;
+      if (sampler && st.generated) {
+        const event = st.generated.events.find((e) => e.stepGlobal === chordStep);
+        if (event) {
+          const bpm = Tone.getTransport().bpm.value;
+          const dur = (event.durationSteps * 60) / (bpm * 4);
+          try {
+            sampler.triggerAttackRelease(event.notes, dur, time);
+          } catch (err) {
+            console.warn('[chord]', err);
+          }
+        }
       }
 
       Tone.getDraw().schedule(() => {
@@ -177,9 +183,12 @@ async function testSampler() {
   await ensureAudioStarted();
   const eng = getEngine();
   if (!eng.chord.sampler) return 'no-sampler';
+  const st = useStore.getState();
+  const evCount = st.generated ? st.generated.events.length : 0;
+  const firstNotes = st.generated?.events[0]?.notes?.join(',') ?? 'none';
   try {
     eng.chord.sampler.triggerAttackRelease(['C4', 'E4', 'G4'], 1, Tone.now());
-    return 'triggered';
+    return `ok | events:${evCount} | notes0:${firstNotes}`;
   } catch (e) {
     return String(e);
   }
