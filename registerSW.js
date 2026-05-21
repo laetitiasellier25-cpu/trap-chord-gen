@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/trap-chord-gen/sw.js', { scope: '/trap-chord-gen/' })})}
