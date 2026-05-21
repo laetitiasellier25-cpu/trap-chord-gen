@@ -10,41 +10,52 @@ on:
 
 jobs:
   build:
-    runs-on: macos-14   # Apple Silicon runner (M1)
+    runs-on: macos-14   # Apple Silicon (arm64)
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Xcode Command Line Tools
-        run: xcode-select --print-path || sudo xcode-select --install || true
-
       - name: Cache JUCE
         uses: actions/cache@v4
         with:
           path: vst-plugin/build/_deps
-          key: juce-7.0.12-${{ runner.os }}
+          key: juce-7.0.5-${{ runner.os }}-${{ runner.arch }}
 
       - name: Configure CMake
         working-directory: vst-plugin
         run: |
           cmake -B build \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+            -DCMAKE_OSX_ARCHITECTURES="arm64" \
             -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
 
       - name: Build
         working-directory: vst-plugin
-        run: cmake --build build --config Release --parallel
+        run: cmake --build build --config Release --parallel $(sysctl -n hw.logicalcpu)
 
-      - name: Collect VST3
+      - name: Find and collect VST3
         run: |
+          echo "=== Searching for built VST3 ==="
+          find vst-plugin/build -name "*.vst3" 2>/dev/null || echo "No .vst3 found"
+          find vst-plugin/build -name "TrapChordGen" -type f 2>/dev/null || true
+
+          VST3=$(find vst-plugin/build -name "*.vst3" -type d | head -1)
+          if [ -z "$VST3" ]; then
+            echo "ERROR: VST3 bundle not found. Build tree:"
+            find vst-plugin/build -maxdepth 5 -type f | grep -v "_deps" | head -40
+            exit 1
+          fi
+
+          echo "Found: $VST3"
           mkdir -p artifact
-          cp -r vst-plugin/build/TrapChordGen_artefacts/Release/VST3/TrapChordGen.vst3 artifact/
+          cp -r "$VST3" artifact/TrapChordGen.vst3
+          echo "=== Artifact contents ==="
+          find artifact -type f
 
       - name: Upload VST3 artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TrapChordGen-VST3-macOS
+          name: TrapChordGen-VST3-macOS-arm64
           path: artifact/TrapChordGen.vst3
-          retention-days: 30
+          retention-days: 90
