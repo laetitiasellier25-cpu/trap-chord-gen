@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { useAudioEngine } from './hooks/useAudioEngine';
 import { useStore } from './state/store';
 import { SampleDropZone } from './components/chord/SampleDropZone';
@@ -33,13 +33,18 @@ function App() {
     }
   }, [selectedProgressionId, currentTonic, currentMode, engine, isPlaying]);
 
-  // Live reschedule on pattern edits
+  // Live reschedule on pattern edits — debounced to avoid glitches on rapid clicks
   const patterns = useStore((s) => s.patterns);
   const lanes = useStore((s) => s.lanes);
   const stepCount = useStore((s) => s.stepCount);
+  const rescheduleRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const debouncedReschedule = useCallback(() => {
+    if (rescheduleRef.current) clearTimeout(rescheduleRef.current);
+    rescheduleRef.current = setTimeout(() => engine.rescheduleAll(), 80);
+  }, [engine]);
   useEffect(() => {
-    if (isPlaying) engine.rescheduleAll();
-  }, [patterns, lanes, stepCount, isPlaying, engine]);
+    if (isPlaying) debouncedReschedule();
+  }, [patterns, lanes, stepCount, isPlaying, debouncedReschedule]);
 
   const handleChordParamChange = () => {
     engine.regenerateChords();

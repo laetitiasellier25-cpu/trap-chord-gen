@@ -25,7 +25,7 @@ export function DrumSequencer({ onSampleDrop, onPatternChange }: Props) {
 
   const handleExport = () => {
     try {
-      exportDrumsAsMidi(patterns, lanes, bpm);
+      exportDrumsAsMidi(patterns, lanes, bpm, stepCount);
     } catch (e) {
       alert(e instanceof Error ? e.message : 'Erreur export MIDI');
     }

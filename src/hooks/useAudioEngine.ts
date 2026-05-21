@@ -3,7 +3,6 @@ import * as Tone from 'tone';
 import { ChordSampler } from '../audio/SamplePlayer';
 import { DrumEngine } from '../audio/DrumEngine';
 import {
-  cancelAllScheduled,
   ensureAudioStarted,
   setBpm,
   setLoopEnd,
@@ -106,8 +105,11 @@ function regenerateChords(): number {
 
 function rescheduleAll() {
   const state = useStore.getState();
-  cancelAllScheduled();
   const eng = getEngine();
+
+  // Cancel only chord+drum events so the playhead repeat stays alive during live edits
+  eng.chord.cancel();
+  eng.drum.cancel();
 
   const loopLength = Math.max(state.loopLengthSteps, state.stepCount);
 

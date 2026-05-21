@@ -101,7 +101,7 @@ export function generateChordTimeline(
     if (pattern.special === 'anticipation' && pattern.anticipationSteps && chordIndex > 0) {
       const anticipation = pattern.anticipationSteps;
       events.push({
-        stepGlobal: cursor - anticipation,
+        stepGlobal: Math.max(0, cursor - anticipation),
         notes: chordNotes,
         durationSteps: chordDurationSteps,
       });
