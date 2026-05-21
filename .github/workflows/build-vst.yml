@@ -1,0 +1,50 @@
+name: Build VST3 (macOS)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'vst-plugin/**'
+      - '.github/workflows/build-vst.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14   # Apple Silicon runner (M1)
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Xcode Command Line Tools
+        run: xcode-select --print-path || sudo xcode-select --install || true
+
+      - name: Cache JUCE
+        uses: actions/cache@v4
+        with:
+          path: vst-plugin/build/_deps
+          key: juce-7.0.12-${{ runner.os }}
+
+      - name: Configure CMake
+        working-directory: vst-plugin
+        run: |
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
+
+      - name: Build
+        working-directory: vst-plugin
+        run: cmake --build build --config Release --parallel
+
+      - name: Collect VST3
+        run: |
+          mkdir -p artifact
+          cp -r vst-plugin/build/TrapChordGen_artefacts/Release/VST3/TrapChordGen.vst3 artifact/
+
+      - name: Upload VST3 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TrapChordGen-VST3-macOS
+          path: artifact/TrapChordGen.vst3
+          retention-days: 30

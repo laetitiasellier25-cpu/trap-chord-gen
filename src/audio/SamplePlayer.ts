@@ -1,5 +1,6 @@
 import * as Tone from 'tone';
 import type { ChordEvent } from '../types';
+import { DAW_MODE, sendChordToJuce } from './JuceBridge';
 
 export class ChordSampler {
   sampler: Tone.Sampler | null = null;
@@ -78,6 +79,13 @@ export class ChordSampler {
           this.sampler.triggerAttackRelease(event.notes, durationNotation, time);
         } catch {
           // ignore individual scheduling errors (e.g. invalid note name)
+        }
+        // In DAW mode, also route chords as MIDI to the JUCE host
+        if (DAW_MODE) {
+          const bpm = Tone.getTransport().bpm.value;
+          Tone.getDraw().schedule(() => {
+            sendChordToJuce(event.notes, event.durationSteps, bpm);
+          }, time);
         }
       }, `0:0:${event.stepGlobal}`);
       this.scheduledIds.push(id);
